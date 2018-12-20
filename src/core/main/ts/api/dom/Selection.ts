@@ -45,8 +45,15 @@ const isNativeIeSelection = (rng: any): boolean => {
   return !!(<any> rng).select;
 };
 
+const isShadowNodeAttachedToDom = function (node: Node): boolean {
+  const shadowHost = DOMUtils.DOM.getTopLevelShadowHost(node);
+  return !!shadowHost && Compare.contains(SugarElement.fromDom(node.ownerDocument), SugarElement.fromDom(shadowHost));
+};
+
 const isAttachedToDom = function (node: Node): boolean {
-  return !!(node && node.ownerDocument) && Compare.contains(SugarElement.fromDom(node.ownerDocument), SugarElement.fromDom(node));
+  return !!(node && node.ownerDocument) &&
+    (Compare.contains(SugarElement.fromDom(node.ownerDocument), SugarElement.fromDom(node)) ||
+     isShadowNodeAttachedToDom(node));
 };
 
 const isValidRange = function (rng: Range) {

@@ -227,6 +227,7 @@ export interface DOMUtils {
   destroy: () => void;
   isChildOf: (node: Node, parent: Node) => boolean;
   dumpRng: (r: Range) => string;
+  getTopLevelShadowHost: (node: Node) => Node;
 }
 
 /**
@@ -1201,6 +1202,26 @@ export function DOMUtils(doc: Document, settings: Partial<DOMUtilsSettings> = {}
     return false;
   };
 
+  const getTopLevelShadowHost = (node: Node): Node => {
+    let topShadowHost = null;
+    let shadowHost = node;
+    while (shadowHost = getParentShadowHost(shadowHost)) {
+      topShadowHost = shadowHost;
+    }
+    return topShadowHost;
+  };
+
+  const getElementShadowHost = (element: any): Node => {
+    return element.host;
+  };
+
+  const getParentShadowHost = (node: Node): Node => {
+    while (node.parentNode) {
+      node = node.parentNode;
+    }
+    return getElementShadowHost(node);
+  };
+
   const dumpRng = (r: Range) => {
     return (
       'startContainer: ' + r.startContainer.nodeName +
@@ -1894,7 +1915,8 @@ export function DOMUtils(doc: Document, settings: Partial<DOMUtilsSettings> = {}
      */
     destroy,
     isChildOf,
-    dumpRng
+    dumpRng,
+    getTopLevelShadowHost
   };
 
   attrHooks = setupAttrHooks(styles, settings, () => self);
