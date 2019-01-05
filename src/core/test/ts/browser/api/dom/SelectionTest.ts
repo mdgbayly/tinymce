@@ -19,16 +19,17 @@ UnitTest.asynctest('browser.tinymce.core.api.dom.SelectionTest', function () {
   TinyLoader.setup(function (editor, onSuccess, onFailure) {
 
     const sTestEmptyDocumentSelection = Logger.t('Returns empty document selection', Step.sync(function () {
+      document.getSelection().removeAllRanges();
       const selection = Selection(DOM, DOM.win, null, editor);
-      Assertions.assertEq('empty selection', 'None', selection.getSel().type);
+      Assertions.assertEq('empty selection', null, selection.getSel().anchorNode);
     }));
 
-    const sTestSimpleDocumentSelection = Logger.t('Returns caret document selection', Step.sync(function () {
+    const sTestSimpleDocumentSelection = Logger.t('Returns document selection', Step.sync(function () {
       viewBlock.attach();
       document.getSelection().selectAllChildren(viewBlock.get());
 
       const selection = Selection(DOM, DOM.win, null, editor);
-      Assertions.assertEq('caret selection', 'Caret', selection.getSel().type);
+      Assertions.assertEq('document selection', 'DIV', selection.getSel().anchorNode.nodeName);
     }));
 
     const sTestSimpleShadowSelection = Logger.t('Returns shadow root selection', Step.sync(function () {
@@ -40,11 +41,12 @@ UnitTest.asynctest('browser.tinymce.core.api.dom.SelectionTest', function () {
         para.textContent = 'how now brown cow';
         editor.targetElm.appendChild(para);
         viewBlock.attach();
-        shadow.getSelection().selectAllChildren(editor.targetElm);
+        const selectionRoot = shadow.getSelection ? shadow : document;
+        selectionRoot.getSelection().selectAllChildren(editor.targetElm);
 
         const selection = Selection(DOM, DOM.win, null, editor);
         Assertions.assertEq('shadow selection', true, selection.getSel().containsNode(para.firstChild, false));
-    }
+      }
 
     }));
 
