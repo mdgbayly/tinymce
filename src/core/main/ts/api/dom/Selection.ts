@@ -280,9 +280,10 @@ export const Selection = function (dom: DOMUtils, win: Window, serializer, edito
             target = target.parentNode;
           }
           // If there is no parent node, but there is `host` property - we've just found Shadow Root,
-          // where we'll get selection
+          // where we'll get selection. Note for Chrome the shadowRoot implements the DocumentOrShadowRoot mixin
+          // but in other browsers it is still implemented on the document
           if (target.host) {
-            selectionRoot = target;
+            selectionRoot = target.getSelection ? target : win.document;
           }
         })(editor.targetElm);
       }
