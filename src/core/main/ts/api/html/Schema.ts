@@ -17,6 +17,7 @@ interface Schema {
   elements: { [name: string]: ElementRule; };
   getValidStyles: () => SchemaMap;
   getValidClasses: () => SchemaMap;
+  getInvalidClasses: () => SchemaMap;
   getBlockElements: () => SchemaMap;
   getInvalidStyles: () => SchemaMap;
   getShortEndedElements: () => SchemaMap;
@@ -390,7 +391,7 @@ function Schema(settings?) {
   let validStyles;
   let invalidStyles;
   let schemaItems;
-  let whiteSpaceElementsMap, selfClosingElementsMap, shortEndedElementsMap, boolAttrMap, validClasses;
+  let whiteSpaceElementsMap, selfClosingElementsMap, shortEndedElementsMap, boolAttrMap, validClasses, invalidClasses;
   let blockElementsMap, nonEmptyElementsMap, moveCaretBeforeOnEnterElementsMap, textBlockElementsMap, textInlineElementsMap;
   const customElementsMap = {}, specialElements = {} as SchemaRegExpMap;
 
@@ -427,6 +428,7 @@ function Schema(settings?) {
   validStyles = compileElementMap(settings.valid_styles);
   invalidStyles = compileElementMap(settings.invalid_styles, 'map');
   validClasses = compileElementMap(settings.valid_classes, 'map');
+  invalidClasses = compileElementMap(settings.invalid_classes, 'map');
 
   // Setup map objects
   whiteSpaceElementsMap = createLookupTable(
@@ -843,6 +845,14 @@ function Schema(settings?) {
   const getValidClasses = (): SchemaMap => validClasses;
 
   /**
+   * Name/value map object with invalid classes for each element.
+   *
+   * @method getInvalidClasses
+   * @type Object
+   */
+  const getInvalidClasses = (): SchemaMap => invalidClasses;
+
+  /**
    * Returns a map with boolean attributes.
    *
    * @method getBoolAttrs
@@ -1035,6 +1045,7 @@ function Schema(settings?) {
     elements,
     getValidStyles,
     getValidClasses,
+    getInvalidClasses,
     getBlockElements,
     getInvalidStyles,
     getShortEndedElements,
